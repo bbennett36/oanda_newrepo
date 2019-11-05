@@ -400,11 +400,11 @@ def main():
 #                         t.sleep(60)
 #                     else:
 #                         pass
-                result = (datetime.now() - time).total_seconds() / 60
-                if result >= 5:
-                    is_ready = True
-                else:
-                    pass
+                    result = (datetime.now() - time).total_seconds() / 60
+                    if result >= 5:
+                        is_ready = True
+                    else:
+                        pass
         except Exception as ex:
             print('error')
             print(ex)
