@@ -281,7 +281,7 @@ def main():
             
             for f in short_model_cols:
                 group2[f] = pd.to_numeric(group2[f])
-            
+            print()
             group2['short_prob'] = short_model.predict(group2[short_model_cols])
             display(datetime.now(), float(group2['short_prob'].values[0]))
             group2['short_pred'] = group2['short_prob'].apply(lambda x: 1 if x >= short_target_cutoff else 0)
@@ -291,9 +291,9 @@ def main():
             group2['long_pred'] = group2['long_prob'].apply(lambda x: 1 if x >= long_target_cutoff else 0)
 
             if group2['short_pred'].values[0] == 1 and group2['long_pred'].values[0] == 0:
-                tp_price = float(group2['ask_c'].values[0]) + 0.0025
+                tp_price = float(group2['ask_c'].values[0]) + 0.003
                 tp_price = round(tp_price, 4)
-                sl_price = float(group2['bid_c'].values[0]) -  0.0025
+                sl_price = float(group2['bid_c'].values[0]) -  0.003
                 sl_price = round(sl_price, 4)
 
                 order_config = {}
