@@ -400,7 +400,7 @@ def main():
 #                         t.sleep(60)
 #                     else:
 #                         pass
-                    result = (datetime.now() - time).total_seconds() / 60
+                    result = (datetime.now() - time_now).total_seconds() / 60
                     if result >= 5:
                         is_ready = True
                     else:
