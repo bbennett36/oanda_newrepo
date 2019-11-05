@@ -393,13 +393,18 @@ def main():
 
             else:
                 while not is_ready:
-                    dnow = datetime.now()
-                    dnow = dnow.minute
-                    if dnow >= 50 and dnow <=60:
-                        is_ready = True
-                        t.sleep(60)
-                    else:
-                        pass
+#                     dnow = datetime.now()
+#                     dnow = dnow.minute
+#                     if dnow >= 50 and dnow <=60:
+#                         is_ready = True
+#                         t.sleep(60)
+#                     else:
+#                         pass
+                result = (datetime.now() - time).total_seconds() / 60
+                if result >= 5:
+                    is_ready = True
+                else:
+                    pass
         except Exception as ex:
             print('error')
             print(ex)
