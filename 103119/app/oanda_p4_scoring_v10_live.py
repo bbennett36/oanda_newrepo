@@ -379,6 +379,7 @@ def main():
                 tp_id = resp_dict['relatedTransactionIDs'][len(resp_dict['relatedTransactionIDs'])-2]
                 sl_id = resp_dict['relatedTransactionIDs'][len(resp_dict['relatedTransactionIDs'])-1]
                 order_closed = False
+                print(resp_dict)
                 print('order placed')
                 while not order_closed:
                     try:
