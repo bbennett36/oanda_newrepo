@@ -288,11 +288,11 @@ def main():
                 group2[f] = pd.to_numeric(group2[f])
             print()
             group2['short_prob'] = short_model.predict(group2[short_model_cols])
-            display(datetime.now(), float(group2['short_prob'].values[0]))
+            display('short:', datetime.now(), float(group2['short_prob'].values[0]))
             group2['short_pred'] = group2['short_prob'].apply(lambda x: 1 if x >= short_target_cutoff else 0)
 
             group2['long_prob'] = long_model.predict(group2[long_model_cols])
-            display(datetime.now(), float(group2['long_prob'].values[0]))
+            display('long:', datetime.now(), float(group2['long_prob'].values[0]))
             group2['long_pred'] = group2['long_prob'].apply(lambda x: 1 if x >= long_target_cutoff else 0)
 
             if group2['short_pred'].values[0] == 1 and group2['long_pred'].values[0] == 0:
@@ -325,31 +325,35 @@ def main():
                 order_closed = False
                 print('order placed')
                 while not order_closed:
-                    endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(tp_id)
-                    headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
-                    tp_response = requests.get(url=endpoint, headers=headers)
-                    tp_dict = json.loads(tp_response.text)
+                    try:
+                        endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(tp_id)
+                        headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
+                        tp_response = requests.get(url=endpoint, headers=headers)
+                        tp_dict = json.loads(tp_response.text)
 
-                    endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(sl_id)
-                    headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
-                    sl_response = requests.get(url=endpoint, headers=headers)
-                    sl_dict = json.loads(sl_response.text)
+                        endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(sl_id)
+                        headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
+                        sl_response = requests.get(url=endpoint, headers=headers)
+                        sl_dict = json.loads(sl_response.text)
 
-                    if tp_dict['order']['state'] == 'FILLED':
-                        order_closed = True
-                        losing_streak = 0
-                    elif sl_dict['order']['state'] == 'FILLED':
-                        order_closed = True
-                        losing_streak += 1
-                    else:
-        #                 print('waiting for order to close')
-                        t.sleep(60)
-
-
+                        if tp_dict['order']['state'] == 'FILLED':
+                            order_closed = True
+                            losing_streak = 0
+                        elif sl_dict['order']['state'] == 'FILLED':
+                            order_closed = True
+                            losing_streak += 1
+                        else:
+            #                 print('waiting for order to close')
+                            t.sleep(60)
+                    except Exception as ex:
+                        print('error waiting for order')
+                        t.sleep(60*5)
+                        pass
+                    
             elif group2['short_pred'].values[0] == 0 and group2['long_pred'].values[0] == 1:
-                tp_price = float(group2['ask_c'].values[0]) + 0.0025
+                tp_price = float(group2['ask_c'].values[0]) + 0.003
                 tp_price = round(tp_price, 4)
-                sl_price = float(group2['bid_c'].values[0]) - 0.0025
+                sl_price = float(group2['bid_c'].values[0]) - 0.003
                 sl_price = round(sl_price, 4)
 
                 order_config = {}
@@ -398,7 +402,7 @@ def main():
                             t.sleep(60)
                     except Exception as ex:
                         print('error waiting for order')
-                        time.sleep(60*5)
+                        t.sleep(60*5)
                         pass
 
             else:
