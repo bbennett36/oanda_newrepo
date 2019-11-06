@@ -356,8 +356,6 @@ def main():
                 tp_price = round(tp_price, 4)
                 sl_price = float(group2['bid_c'].values[0]) - 0.003
                 sl_price = round(sl_price, 4)
-                print(tp_price)
-                print(sl_price)
 
                 order_config = {}
                 order_config['order'] = {
