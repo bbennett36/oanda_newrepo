@@ -259,7 +259,7 @@ def main():
                 for s in shift_fields:
                     col = s+'_past'+str(shift_counter)
                     candle_data[col] = ((candle_data[s] - candle_data[s].shift(shift_counter)) / candle_data[s].shift(shift_counter))*100
-                    shift_counter+=1
+                shift_counter+=1
 
             candle_data = candle_data[candle_data['id'] == candle_data['id'].max()]
             candle_data.drop(['id'], axis=1, inplace=True)
