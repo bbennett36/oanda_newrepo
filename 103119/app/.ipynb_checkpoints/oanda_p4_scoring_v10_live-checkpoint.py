@@ -371,25 +371,30 @@ def main():
                 order_closed = False
                 print('order placed')
                 while not order_closed:
-                    endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(tp_id)
-                    headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
-                    tp_response = requests.get(url=endpoint, headers=headers)
-                    tp_dict = json.loads(tp_response.text)
+                    try:
+                        endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(tp_id)
+                        headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
+                        tp_response = requests.get(url=endpoint, headers=headers)
+                        tp_dict = json.loads(tp_response.text)
 
-                    endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(sl_id)
-                    headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
-                    sl_response = requests.get(url=endpoint, headers=headers)
-                    sl_dict = json.loads(sl_response.text)
+                        endpoint = "https://api-fxtrade.oanda.com/v3/accounts/" + account_id + "/orders/" + str(sl_id)
+                        headers = {"Authorization": "Bearer cffb90f2341ed281be6e4910799d2e77-c1c86c039d32bae718f9e7c213784182"}
+                        sl_response = requests.get(url=endpoint, headers=headers)
+                        sl_dict = json.loads(sl_response.text)
 
-                    if tp_dict['order']['state'] == 'FILLED':
-                        order_closed = True
-                        losing_streak = 0
-                    elif sl_dict['order']['state'] == 'FILLED':
-                        order_closed = True
-                        losing_streak += 1
-                    else:
-        #                 print('waiting for order to close')
-                        t.sleep(60)
+                        if tp_dict['order']['state'] == 'FILLED':
+                            order_closed = True
+                            losing_streak = 0
+                        elif sl_dict['order']['state'] == 'FILLED':
+                            order_closed = True
+                            losing_streak += 1
+                        else:
+            #                 print('waiting for order to close')
+                            t.sleep(60)
+                    except Exception as ex:
+                        print('error waiting for order')
+                        time.sleep(60*5)
+                        pass
 
             else:
                 while not is_ready:
