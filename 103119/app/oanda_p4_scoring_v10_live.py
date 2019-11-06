@@ -347,6 +347,7 @@ def main():
                             t.sleep(60)
                     except Exception as ex:
                         print('error waiting for order')
+                        print(ex)
                         t.sleep(60*5)
                         pass
                     
@@ -402,6 +403,7 @@ def main():
                             t.sleep(60)
                     except Exception as ex:
                         print('error waiting for order')
+                        print(ex)
                         t.sleep(60*5)
                         pass
 
