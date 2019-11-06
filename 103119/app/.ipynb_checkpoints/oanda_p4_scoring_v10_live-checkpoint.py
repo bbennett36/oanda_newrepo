@@ -249,8 +249,13 @@ def main():
             for c in list(candle_data):
                 if c != 'time' and c != 'instrument':
                     candle_data[c] = pd.to_numeric(candle_data[c])
-
+                    
             shift_fields = ['bid_o', 'bid_h','bid_l','bid_c','ask_o','ask_h','ask_l','ask_c']
+
+            for s in shift_fields:
+                candle_data[s] = candle_data[s].shift(1)
+
+            candle_data = candle_data[~candle_data['bid_o'].isnull()]
 
             shift_counter = 1
             shift_counter_max = 24
