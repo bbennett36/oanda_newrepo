@@ -245,14 +245,14 @@ def main():
             candle_data = get_candle_data(pair, counter)
             candle_data = candle_data.reset_index(drop=True)
             candle_data['id'] = candle_data.index
-            
-            orig_candle_data = candle_data[candle_data['id'] == candle_data['id'].max()].copy()
-            orig_candle_data.drop(['id'], axis=1, inplace=True)
-            orig_candle_data = orig_candle_data.reset_index(drop=True)
 
             for c in list(candle_data):
                 if c != 'time' and c != 'instrument':
                     candle_data[c] = pd.to_numeric(candle_data[c])
+                    
+            orig_candle_data = candle_data[candle_data['id'] == candle_data['id'].max()].copy()
+            orig_candle_data.drop(['id'], axis=1, inplace=True)
+            orig_candle_data = orig_candle_data.reset_index(drop=True)
                     
             shift_fields = ['bid_o', 'bid_h','bid_l','bid_c','ask_o','ask_h','ask_l','ask_c']
 
