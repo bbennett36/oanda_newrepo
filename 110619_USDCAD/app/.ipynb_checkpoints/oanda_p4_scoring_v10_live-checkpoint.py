@@ -61,9 +61,9 @@ def get_ob_data(price_range_iter, pair, candle_data):
         temp['bucketwidth'] = data['orderBook']['bucketWidth']
 
         ask_high = round(tempcandle['ask_h'].values[0], 4)
-        ask_high_max = round(ask_high + 0.02, 4)
+        ask_high_max = round(ask_high + 0.015, 4)
         bid_low = round(tempcandle['bid_l'].values[0], 4)
-        bid_low_min = round(bid_low - 0.02, 4)
+        bid_low_min = round(bid_low - 0.015, 4)
         mid_prev_close = round((ask_high + bid_low)/2, 4)
         ask_close =  round(tempcandle['ask_c'].values[0], 4)
         bid_close =  round(tempcandle['bid_c'].values[0], 4)
@@ -82,7 +82,7 @@ def get_ob_data(price_range_iter, pair, candle_data):
                 else:
                     ob_df = ob_df.append(temp_ob)
         
-        ob_range = np.arange(ask_close-0.02, (ask_close+0.02)+price_range_iter, price_range_iter)
+        ob_range = np.arange(ask_close-0.015, (ask_close+0.015)+price_range_iter, price_range_iter)
         
         for v in ob_range:
 #             v = round(v, 4)
@@ -96,7 +96,7 @@ def get_ob_data(price_range_iter, pair, candle_data):
             diff_col = 'ob_diff_' + str(price_col).replace('.', '_')
             
             if v < ask_close:  
-                under_mask = (ob_df['price'] < ask_close) & (ob_df['price'] > ask_close-0.02)
+                under_mask = (ob_df['price'] < ask_close) & (ob_df['price'] > ask_close-0.015)
 
                 temp[long_price_col] = round(ob_df[under_mask]['longcountpercent'].cumsum().max(), 2)
                 temp[short_price_col] = round(ob_df[under_mask]['shortcountpercent'].cumsum().max(), 2)
@@ -106,7 +106,7 @@ def get_ob_data(price_range_iter, pair, candle_data):
                 temp[diff_col] =  round(ob_df[under_mask]['longcountpercent'].cumsum().max(), 2) - round(ob_df[under_mask]['shortcountpercent'].cumsum().max(), 2)            
                 
             elif v > ask_close:
-                over_mask = (ob_df['price'] > ask_close) & (ob_df['price'] < ask_close+0.02) 
+                over_mask = (ob_df['price'] > ask_close) & (ob_df['price'] < ask_close+0.015) 
 
                 temp[long_price_col] =  round(ob_df[over_mask]['longcountpercent'].cumsum().max(), 2)
                 temp[short_price_col] =  round(ob_df[over_mask]['shortcountpercent'].cumsum().max(), 2)
@@ -141,9 +141,9 @@ def get_pos_data(price_range_iter, pair, candle_data):
         temp['bucketwidth'] = data['positionBook']['bucketWidth']
 
         ask_high = tempcandle['ask_h'].values[0]
-        ask_high_max = ask_high + 0.02
+        ask_high_max = ask_high + 0.015
         bid_low = tempcandle['bid_l'].values[0]
-        bid_low_min = bid_low - 0.02
+        bid_low_min = bid_low - 0.015
         mid_prev_close = (ask_high + bid_low)/2
         
         ask_close =  round(tempcandle['ask_c'].values[0], 4)
@@ -165,7 +165,7 @@ def get_pos_data(price_range_iter, pair, candle_data):
                     
                     
                     
-        pos_range = np.arange(ask_close-0.02, (ask_close+0.02)+price_range_iter, price_range_iter)
+        pos_range = np.arange(ask_close-0.015, (ask_close+0.015)+price_range_iter, price_range_iter)
         
         for v in pos_range:
 #             v = round(v, 4)
@@ -179,7 +179,7 @@ def get_pos_data(price_range_iter, pair, candle_data):
             diff_col = 'pos_diff_' + str(price_col).replace('.', '_')
             
             if v < ask_close:  
-                under_mask = (pos_df['price'] < ask_close) & (pos_df['price'] > ask_close-0.02) 
+                under_mask = (pos_df['price'] < ask_close) & (pos_df['price'] > ask_close-0.015) 
 
                 temp[long_price_col] = round(pos_df[under_mask]['longcountpercent'].cumsum().max(), 2)
                 temp[short_price_col] = round(pos_df[under_mask]['shortcountpercent'].cumsum().max(), 2)
@@ -188,7 +188,7 @@ def get_pos_data(price_range_iter, pair, candle_data):
                 temp[short_ratio_col] = round(pos_df[under_mask]['shortcountpercent'].cumsum().max(), 2) / ratio_total     
                 
             elif v > ask_close:
-                over_mask = (pos_df['price'] > ask_close) & (pos_df['price'] < ask_close+0.02) 
+                over_mask = (pos_df['price'] > ask_close) & (pos_df['price'] < ask_close+0.015) 
 
                 temp[long_price_col] =  round(pos_df[over_mask]['longcountpercent'].cumsum().max(), 2)
                 temp[short_price_col] =  round(pos_df[over_mask]['shortcountpercent'].cumsum().max(), 2)
@@ -214,21 +214,21 @@ def get_pos_data(price_range_iter, pair, candle_data):
 def main():
     account_id = '001-001-2676381-001'
     price_range_iter = 0.0005
-    pair = 'EUR_USD'
+    pair = 'USD_CAD'
 
-    short_model = lgb.Booster(model_file='../model/oanda_EURUSD_long_v10_short.txt')
-    short_model_info = pd.read_csv('../model/oanda_EURUSD_long_v10_info_short.csv')
+    short_model = lgb.Booster(model_file='../model/oanda_USDCAD_short.txt')
+    short_model_info = pd.read_csv('../model/oanda_USDCAD_short_info.csv')
     short_target_diff = short_model_info['long_target_diff'][0]
     short_stop_loss = short_model_info['long_stop_loss'][0]
-    short_model_cols = pd.read_csv('../model/oanda_EURUSD_long_v10_layout_short.csv')
+    short_model_cols = pd.read_csv('../model/oanda_USDCAD_short_layout.csv')
     short_model_cols = short_model_cols['features'].values
     short_target_cutoff = short_model_info['l_target_cutoff'].values[0]
     
-    long_model = lgb.Booster(model_file='../model/oanda_EURUSD_long_v10_long.txt')
-    long_model_info = pd.read_csv('../model/oanda_EURUSD_long_v10_info_long.csv')
+    long_model = lgb.Booster(model_file='../model/oanda_USDCAD_long.txt')
+    long_model_info = pd.read_csv('../model/oanda_USDCAD_long_info.csv')
     long_target_diff = long_model_info['long_target_diff'][0]
     long_stop_loss = long_model_info['long_stop_loss'][0]
-    long_model_cols = pd.read_csv('../model/oanda_EURUSD_long_v10_layout_long.csv')
+    long_model_cols = pd.read_csv('../model/oanda_USDCAD_long_layout.csv')
     long_model_cols = long_model_cols['features'].values
     long_target_cutoff = long_model_info['l_target_cutoff'].values[0]    
 
@@ -245,15 +245,15 @@ def main():
             candle_data = get_candle_data(pair, counter)
             candle_data = candle_data.reset_index(drop=True)
             candle_data['id'] = candle_data.index
-            
-            orig_candle_data = candle_data[candle_data['id'] == candle_data['id'].max()].copy()
-            orig_candle_data.drop(['id'], axis=1, inplace=True)
-            orig_candle_data = orig_candle_data.reset_index(drop=True)
 
             for c in list(candle_data):
                 if c != 'time' and c != 'instrument':
                     candle_data[c] = pd.to_numeric(candle_data[c])
                     
+            orig_candle_data = candle_data[candle_data['id'] == candle_data['id'].max()].copy()
+            orig_candle_data.drop(['id'], axis=1, inplace=True)
+            orig_candle_data = orig_candle_data.reset_index(drop=True)
+    
             shift_fields = ['bid_o', 'bid_h','bid_l','bid_c','ask_o','ask_h','ask_l','ask_c']
 
             for s in shift_fields:
@@ -263,10 +263,11 @@ def main():
 
             shift_counter = 1
             shift_counter_max = 24
-
+            new_cols = []
             while shift_counter <= shift_counter_max:
                 for s in shift_fields:
                     col = s+'_past'+str(shift_counter)
+                    new_cols.append(col)
                     candle_data[col] = ((candle_data[s] - candle_data[s].shift(shift_counter)) / candle_data[s].shift(shift_counter))*100
                 shift_counter+=1
 
@@ -302,14 +303,14 @@ def main():
             group2['long_pred'] = group2['long_prob'].apply(lambda x: 1 if x >= long_target_cutoff else 0)
 
             if group2['short_pred'].values[0] == 1 and group2['long_pred'].values[0] == 0:
-                tp_price = float(group2['ask_c'].values[0]) + 0.003
+                tp_price = float(group2['ask_c'].values[0]) + short_model_info['long_target_diff'].values[0]
                 tp_price = round(tp_price, 4)
-                sl_price = float(group2['bid_c'].values[0]) -  0.003
+                sl_price = float(group2['bid_c'].values[0]) - short_model_info['long_stop_loss'].values[0]
                 sl_price = round(sl_price, 4)
 
                 order_config = {}
                 order_config['order'] = {
-                    "units": "-5000",
+                    "units": "-2000",
                     "instrument": pair,    
                     "timeInForce": "FOK",
                     "type": "MARKET",
@@ -358,14 +359,14 @@ def main():
                         pass
                     
             elif group2['short_pred'].values[0] == 0 and group2['long_pred'].values[0] == 1:
-                tp_price = float(group2['ask_c'].values[0]) + 0.003
+                tp_price = float(group2['ask_c'].values[0]) + long_model_info['long_target_diff'].values[0]
                 tp_price = round(tp_price, 4)
-                sl_price = float(group2['bid_c'].values[0]) - 0.003
+                sl_price = float(group2['bid_c'].values[0]) - long_model_info['long_stop_loss'].values[0]
                 sl_price = round(sl_price, 4)
 
                 order_config = {}
                 order_config['order'] = {
-                    "units": "5000",
+                    "units": "2000",
                     "instrument": pair,    
                     "timeInForce": "FOK",
                     "type": "MARKET",
@@ -423,7 +424,7 @@ def main():
 #                     else:
 #                         pass
                     result = (datetime.now() - time_now).total_seconds() / 60
-                    if result >= 5:
+                    if result >= 10:
                         is_ready = True
                     else:
                         pass

@@ -245,6 +245,10 @@ def main():
             candle_data = get_candle_data(pair, counter)
             candle_data = candle_data.reset_index(drop=True)
             candle_data['id'] = candle_data.index
+            
+            orig_candle_data = candle_data[candle_data['id'] == candle_data['id'].max()].copy()
+            orig_candle_data.drop(['id'], axis=1, inplace=True)
+            orig_candle_data = orig_candle_data.reset_index(drop=True)
 
             for c in list(candle_data):
                 if c != 'time' and c != 'instrument':
@@ -269,6 +273,8 @@ def main():
             candle_data = candle_data[candle_data['id'] == candle_data['id'].max()]
             candle_data.drop(['id'], axis=1, inplace=True)
             candle_data = candle_data.reset_index(drop=True)
+            candle_data.drop(shift_fields, axis=1, inplace=True)
+            candle_data = pd.concat([candle_data, orig_candle_data[shift_fields]], axis=1)
             
             ob_data = get_ob_data(price_range_iter, pair, candle_data)
             pos_data = get_pos_data(price_range_iter, pair, candle_data)
